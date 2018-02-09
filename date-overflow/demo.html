@@ -1,0 +1,68 @@
+<!--1、解决点击今天按钮日历不收起
+	2、解决加最小限制日期，当赋值日期小于最小限制日期时重新赋值onfocus，并浏览器不抛错
+	3、解决时间new Date("2012-02-01 00:00:00")时间换算在移动端和在低版本浏览器转出NaN,
+	4、解决Date.parse会出现默认小时为8点
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <input id="startTime" class="Wdate" type="text"  onfocus="steTimes(this)"  value="2018-01-09 00:00:00" readonly>
+    <input id="btn" value="赋值" type="button">
+    <script language="javascript" type="text/javascript" src="../jquery-1.11.3.js"></script>
+    <script language="javascript" type="text/javascript" src="My97DatePicker/WdatePicker.js"></script>
+    <script>
+    //使用onfocus时，先赋值日期控件再取值；而使用onclick时间控件先取值，input再赋值
+    $(function(){
+        $("#btn").on("click",function(){
+        	$("#startTime").val("2018-02-07 01:00:00");
+        })
+    })
+    var today=new Date();
+	var _today = today.getFullYear()+"-";
+	  	_today += (today.getMonth()+1)<10?"0"+(today.getMonth()+1)+"-":(today.getMonth()+1)+"-";
+	  	_today += today.getDate()<10?"0"+today.getDate():tom.getDate();
+    function steTimes(_this){
+    	var tom=new Date();
+		tom.setDate(tom.getDate()+1);
+  		var _tom = tom.getFullYear()+"-";
+		  	_tom += (tom.getMonth()+1)<10?"0"+(tom.getMonth()+1)+"-":(tom.getMonth()+1)+"-";
+		  	_tom += tom.getDate()<10?"0"+tom.getDate():tom.getDate();
+        var startTime = document.querySelector('#startTime');
+    	var dates=$("#startTime").val();
+    	//把时间格式转为秒时要把-转换为/否则，会new Date(2012-12-20)在移动端和在低版本浏览器转出NaN,Date.parse会出现小时为8点
+    	var biTime = dates.replace(/-/g,"/");
+		var biTimeObj=new Date(biTime);
+	 	var bibool = compareTimeHour(new Date(),biTimeObj);
+    	if(!bibool){
+    		$("#startTime").val(_tom+' 00:00:00');
+    	}
+		WdatePicker({
+            el: _this,
+            dateFmt: 'yyyy-MM-dd HH:mm:ss',
+            minDate:_today+' 00:00:00',
+            qsEnabled: true,
+            // 设置点击今天是否重置时间
+            resetTime: true
+      })
+    	
+    }
+    
+        /***比较时间大小***/
+	function compareTimeHour(oldTime,newTime){   
+		var t1 = new Date(oldTime); 
+		var t2 = new Date(newTime);
+	    if(Date.parse(t1) - Date.parse(t2)>0){   
+	    	return false;
+	    } 
+	    return true;
+	}
+    </script>
+</body>
+</html>
